@@ -7,14 +7,24 @@ const addEmployeeBtn = document.getElementById("addEmployeeBtn");
 const addModal = document.getElementById("addModal");
 const deleteModal = document.getElementById("deleteModal");
 const deleteId = document.getElementById("deleteId");
+const deleteMessage = document.getElementById("deleteMessage");
+const searchInp = document.getElementById("searchInp");
 let employees = [];
 
 
 function displayEmployees(employeeList) {
-    employees = employeeList;
     const tbody = document.getElementById("tbody");
 
     tbody.innerHTML = "";
+
+    if (employeeList.length === 0) {
+        tbody.innerHTML = `<tr>
+                                <td colspan="10">No employees found.</td>
+                            </tr>`;
+
+                            return;
+    }
+
     employeeList.forEach((employee) => {
         const tr = document.createElement("tr");
         tr.innerHTML = `
@@ -57,14 +67,22 @@ document.getElementById("tbody").addEventListener("click", function(event) {
 
     if (event.target.classList.contains("deleteBtn")) {
         const employeeId = event.target.dataset.id;
+        const employee = employees.find(employee => employee.id == employeeId);
         deleteId.value = employeeId;
-        console.log(employeeId);
+
+        deleteMessage.textContent =  `Are you sure you want to delete ${employee.fullname}?`;
+
         deleteModal.style.display = "block";
     }
 })
 
 form.addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    const submitBtn = form.querySelector("button[type='submit']");
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Adding...";
 
     try {
         const formData = new FormData(form);
@@ -86,6 +104,9 @@ form.addEventListener("submit", async function(event) {
         console.error("Failed to create employee", error);
 
         showMessage("Something went wrong. Please try again.", "error");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Add Employee";
     }
 }) 
 
@@ -98,6 +119,10 @@ document.getElementById("cancelAddBtn").addEventListener("click", function() {
 
 editForm.addEventListener("submit", async function(event) {
     event.preventDefault();
+
+    const submitBtn = editForm.querySelector("button[type='submit']");
+    submitBtn.disabled = true;
+    submitBtn.textContent = "Saving...";
 
     try {
         const formData = new FormData(editForm);
@@ -117,6 +142,9 @@ editForm.addEventListener("submit", async function(event) {
         console.error("Failed to update employee: ", error);
 
         showMessage("Something went wrong. Please try again.", "error");
+    } finally {
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Save Changes";
     }
 
     
@@ -128,6 +156,10 @@ document.getElementById("cancelEditBtn").addEventListener("click", function() {
 
 document.getElementById("confirmDeleteBtn").addEventListener("click", async function() {
     const id = deleteId.value;
+    const deleteBtn = document.getElementById("confirmDeleteBtn");
+
+    deleteBtn.disabled = true;
+    deleteBtn.textContent = "Deleting...";
 
     try {
         const response = await deleteEmployee(id);
@@ -145,6 +177,9 @@ document.getElementById("confirmDeleteBtn").addEventListener("click", async func
         console.error("Failed to delete employee", error);
 
         showMessage("Something went wrong. Please try again.", "error");
+    } finally {
+        deleteBtn.disabled = false;
+        deleteBtn.textContent = "Delete";
     }
 })
 
@@ -154,13 +189,45 @@ document.getElementById("cancelDeleteBtn").addEventListener("click", function() 
 
 
 async function loadEmployee() {
+
+    const tbody = document.getElementById("tbody");
+
+    tbody.innerHTML = `<tr><td colspan="10">Loading employees...</td></tr>`;
+
+try {
     const response = await getEmployees();
 
-
     if (response.success) {
-        displayEmployees(response.data);
-    } 
+        employees = response.data;
+
+        displayEmployees(employees);
+    } else {
+        tbody.innerHTML = `<tr><td colspan="10">Failed to load employees.</td></tr>`;
+    }
+} catch (error) {
+    console.error("Failed to load employees:", error);
+
+    tbody.innerHTML = `<td><td colspan="10">Something went wrong while loading employees</td></td>`;
+    }
 }
+
+function searchFeature() {
+    const searchValue = searchInp.value.toLowerCase().trim();
+
+    if (searchValue === "") {
+        displayEmployees(employees);
+        return;
+    }
+
+    const filtered = employees.filter(employee =>
+        employee.fullname.toLowerCase().includes(searchValue)
+    );
+
+
+    displayEmployees(filtered);
+}
+
+searchInp.addEventListener("input", searchFeature);
 
 function showMessage(message, type) {
     const messageBox = document.getElementById("message");
@@ -178,7 +245,7 @@ function showMessage(message, type) {
 }
 
 document.addEventListener("keydown", function(event) {
-    if (event.key === "escape") {
+    if (event.key === "Escape") {
         addModal.style.display = "none";
         editModal.style.display = "none";
         deleteModal.style.display = "none";
@@ -198,6 +265,8 @@ window.addEventListener("click", function(event) {
         deleteModal.style.display = "none"
     }
 });
+
+
 
 loadEmployee();
     
