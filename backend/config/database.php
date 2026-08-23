@@ -6,10 +6,21 @@ $user = "root";
 $password = "";
 $database = "payroll_system";
 
-$conn = mysqli_connect($host, $user, $password, $database);
+try {
+    $conn = new PDO(
+        "mysql:host=$host;dbname=$database",
+        $user,
+        $password
+    );
 
-if (!$conn) {
-    die("Database connection failed: " + mysqli_connect_error());
+    $conn->setAttribute(
+        PDO::ATTR_ERRMODE,
+        PDO::ERRMODE_EXCEPTION
+    );
+} catch (PDOException $e) {
+    echo json_encode([
+        "success" => false,
+        "message" => "Database connection failed"
+    ]);
 }
-
 ?>
