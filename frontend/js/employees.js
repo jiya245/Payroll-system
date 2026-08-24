@@ -9,6 +9,8 @@ const deleteModal = document.getElementById("deleteModal");
 const deleteId = document.getElementById("deleteId");
 const deleteMessage = document.getElementById("deleteMessage");
 const searchInp = document.getElementById("searchInp");
+const filterStatus = document.getElementById("statusFilter");
+const sortBy = document.getElementById("sortEmployee");
 let employees = [];
 
 
@@ -211,23 +213,48 @@ try {
     }
 }
 
-function searchFeature() {
+function filterFeature() {
     const searchValue = searchInp.value.toLowerCase().trim();
+    const statusFilterValue = filterStatus.value;
+    const sortByValue = sortBy.value;
 
-    if (searchValue === "") {
-        displayEmployees(employees);
-        return;
+    let filtered = employees;
+
+    if (searchValue !== "") {
+        filtered = filtered.filter(employee =>
+            employee.fullname.toLowerCase().includes(searchValue)
+        );
     }
 
-    const filtered = employees.filter(employee =>
-        employee.fullname.toLowerCase().includes(searchValue)
-    );
+    if (statusFilterValue !== "All") {
+        filtered = filtered.filter(employee =>
+            employee.status === statusFilterValue
+        );
+    }
 
+    if (sortByValue === "name") {
+        filtered = [...filtered].sort((a, b) =>
+        a.fullname.localeCompare(b.fullname))
+    };
+
+    if (sortByValue === "salary") {
+        filtered = [...filtered].sort((a, b) =>
+            Number(a.basic_salary) - Number(b.basic_salary)
+        );
+    }
+
+    if (sortByValue === "id") {
+        filtered = [...filtered].sort((a, b) =>
+            Number(a.id) - Number(b.id)
+        );
+    }
 
     displayEmployees(filtered);
 }
 
-searchInp.addEventListener("input", searchFeature);
+searchInp.addEventListener("input", filterFeature);
+filterStatus.addEventListener("change", filterFeature);
+sortBy.addEventListener("change", filterFeature);
 
 function showMessage(message, type) {
     const messageBox = document.getElementById("message");
