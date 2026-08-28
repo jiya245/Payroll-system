@@ -133,6 +133,14 @@
                         </select>
                     </div>
 
+                    <div>
+                        <label for="workSchedule">Work Schedule: </label>
+    
+                        <select name="work_schedule_id" id="workSchedule" required>
+                            <option value="">Select work schedule</option>
+                        </select>
+                    </div>
+
                     <button type="submit">Add Employee</button>
                     <button type="button" id="cancelAddBtn">Cancel</button>
                 </form>
@@ -231,6 +239,14 @@
                         <option value="Inactive">Inactive</option>
                     </select>
                 </div>
+
+                <div>
+                    <label for="WorkSchedule">Work Schedule: </label>
+
+                    <select id="editWorkSchedule">
+                        <option value="">Select work schedule</option>
+                    </select>
+                </div>
     
                 <button type="submit">Save Changes</button>
                 <button type="button" id="cancelEditBtn">Cancel</button>
@@ -294,6 +310,7 @@
                 <th>basic_salary</th>
                 <th>status</th>
                 <th>created_at</th>
+                <th>Work Schedule</th>
                 <th>Actions</th>
 
             </tr>

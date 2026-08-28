@@ -10,9 +10,9 @@ class EmployeeRepository {
     public function create($data) {
 
         $sql = "INSERT into employees
-        (fullname, email, phone, position, department, basic_salary, status)
+        (fullname, email, phone, position, department, basic_salary, status, work_schedule_id)
         VALUES
-        (:fullname, :email, :phone, :position, :department, :basic_salary, :status)";
+        (:fullname, :email, :phone, :position, :department, :basic_salary, :status, :work_schedule_id)";
 
         $stmt = $this->conn->prepare($sql);
 
@@ -23,6 +23,7 @@ class EmployeeRepository {
         $stmt->bindparam(":department", $data["department"]);
         $stmt->bindparam(":basic_salary", $data["basic_salary"]);
         $stmt->bindparam(":status", $data["status"]);
+        $stmt->bindparam(":work_schedule_id", $data["work_schedule_id"]);
 
         $stmt->execute();
 

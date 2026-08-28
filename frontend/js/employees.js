@@ -1,5 +1,5 @@
 import { createEmployee, getEmployees, updateEmployee, deleteEmployee } from "./employeeApi.js";
-
+import { getSchedules } from "./workScheduleApi.js";
 const form = document.getElementById("employeeForm");
 const editModal = document.getElementById("editModal");
 const editForm = document.getElementById("editEmployeeForm");
@@ -11,6 +11,9 @@ const deleteMessage = document.getElementById("deleteMessage");
 const searchInp = document.getElementById("searchInp");
 const filterStatus = document.getElementById("statusFilter");
 const sortBy = document.getElementById("sortEmployee");
+const workSchedule = document.getElementById("workSchedule");
+const editWorkSchedule = document.getElementById("editWorkSchedule");
+
 let employees = [];
 
 
@@ -39,6 +42,7 @@ function displayEmployees(employeeList) {
             <td>${employee.basic_salary}</td>
             <td>${employee.status}</td>
             <td>${employee.created_at}</td>
+            <td>${employee.work_schedule_id}</td>
             <td>
                 <button class="editBtn" data-id="${employee.id}">Edit</button>
                 <button class="deleteBtn" data-id="${employee.id}">Delete</button>
@@ -47,6 +51,19 @@ function displayEmployees(employeeList) {
 
         tbody.appendChild(tr);
     })
+}
+
+function displaySchedule(schedules) {
+    schedules.forEach((schedule) => {
+        const addOption = document.createElement("option");
+        const editOption = document.createElement("option");
+        addOption.value = schedule.id;
+        addOption.textContent = schedule.schedule_name;
+        editOption.value = schedule.id;
+        editOption.textContent = schedule.schedule_name;
+        workSchedule.appendChild(addOption);
+        editWorkSchedule.appendChild(editOption);
+    }) 
 }
 
 document.getElementById("tbody").addEventListener("click", function(event) {
@@ -63,7 +80,7 @@ document.getElementById("tbody").addEventListener("click", function(event) {
         document.getElementById("editDepartment").value = employee.department;
         document.getElementById("editSalary").value = employee.basic_salary;
         document.getElementById("editStatus").value = employee.status;
-
+        editWorkSchedule.value = employee.work_schedule_id;
         editModal.style.display = "block";
     ;}
 
@@ -90,7 +107,7 @@ form.addEventListener("submit", async function(event) {
         const formData = new FormData(form);
 
         const employee = Object.fromEntries(formData.entries());
-    
+        console.log(employee);
         const response = await createEmployee(employee);
     
         if (response.success) {
@@ -213,6 +230,12 @@ try {
     }
 }
 
+async function loadSchedule() {
+    const response = await getSchedules();
+
+    displaySchedule(response.data);
+}
+
 function filterFeature() {
     const searchValue = searchInp.value.toLowerCase().trim();
     const statusFilterValue = filterStatus.value;
@@ -296,4 +319,4 @@ window.addEventListener("click", function(event) {
 
 
 loadEmployee();
-    
+loadSchedule();
