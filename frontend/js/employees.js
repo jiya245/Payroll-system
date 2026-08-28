@@ -155,7 +155,7 @@ editForm.addEventListener("submit", async function(event) {
             editForm.reset();
             loadEmployee();
         } else {
-            showMesasge(response.message, "error");
+            showMessage(response.message, "error");
         }
     } catch (error) {
         console.error("Failed to update employee: ", error);

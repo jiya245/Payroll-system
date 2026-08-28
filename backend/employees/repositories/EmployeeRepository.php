@@ -63,7 +63,8 @@ class EmployeeRepository {
                 position = :position,
                 department = :department,
                 basic_salary = :basic_salary,
-                status = :status
+                status = :status,
+                work_schedule_id = :work_schedule_id
                 WHERE id = :id";
 
         $stmt = $this->conn->prepare($sql);
@@ -76,10 +77,12 @@ class EmployeeRepository {
         $stmt->bindParam(":basic_salary", $data["basic_salary"]);
         $stmt->bindParam(":status", $data["status"]);
         $stmt->bindParam(":id", $data["id"]);
+        $stmt->bindparam(":work_schedule_id", $data["work_schedule_id"]);
+
 
         $stmt->execute();
 
-        return $stmt->rowCount() > 0;
+        return true;
     }
 
     public function delete($id) {
